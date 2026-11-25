@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Antonio", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-script: "Sacramento", cursive;
+
+  --color-obsidian: #060606;
+  --color-obsidian-soft: #0D0D0E;
+  --color-obsidian-card: #111112;
+  --color-crimson: #D91C24;
+  --color-crimson-deep: #8C0F14;
+  --color-crimson-dark: #4A070A;
+}
+
+@layer base {
+  html {
+    background-color: #060606;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #060606;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #D91C24;
+    outline-offset: 2px;
+  }
+}
+
+/* Oversized dark-red background hero wordmark matching reference gradient */
+.hero-backdrop-word {
+  background: linear-gradient(
+    180deg,
+    #E21B22 0%,
+    #B01319 42%,
+    #5E090D 76%,
+    #1B0304 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+
+/* Seamless editorial portrait edge-feathering over the crimson backdrop */
+.portrait-mask {
+  -webkit-mask-image:
+    radial-gradient(ellipse 38% 36% at 50% 30%, #000000 72%, transparent 99%),
+    radial-gradient(ellipse 56% 52% at 50% 78%, #000000 74%, transparent 100%);
+  -webkit-mask-composite: source-over;
+  mask-image:
+    radial-gradient(ellipse 38% 36% at 50% 30%, #000000 72%, transparent 99%),
+    radial-gradient(ellipse 56% 52% at 50% 78%, #000000 74%, transparent 100%);
+  mask-composite: add;
+}
+
+/* Subtle crimson atmospheric glow behind portrait and quote panel */
+.hero-crimson-glow {
+  background: radial-gradient(
+    ellipse 55% 48% at 54% 46%,
+    rgba(190, 20, 28, 0.24) 0%,
+    rgba(115, 10, 16, 0.1) 45%,
+    rgba(6, 6, 6, 0) 76%
+  );
+}
+
+.quote-panel-bg {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(220, 28, 36, 0.32) 0%, transparent 55%),
+    radial-gradient(circle at 10% 90%, rgba(165, 14, 22, 0.35) 0%, transparent 60%),
+    linear-gradient(155deg, #6E0B10 0%, #440609 52%, #1C0305 100%);
+}
+
+/* Custom subtle dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060606;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #242426;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8C0F14;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
