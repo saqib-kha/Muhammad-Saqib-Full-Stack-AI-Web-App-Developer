@@ -70,8 +70,14 @@ export default function ProjectsSection({
           </button>
         </div>
 
-        {/* Three Horizontal Premium Project Cards */}
-        <div className="mt-8 grid grid-cols-1 gap-7 md:grid-cols-3 lg:gap-8">
+        {/* Horizontal Premium Project Cards */}
+        <div
+          className={`mt-8 grid grid-cols-1 gap-7 ${
+            projects.length >= 4
+              ? 'md:grid-cols-2 lg:grid-cols-4 lg:gap-6'
+              : 'md:grid-cols-3 lg:gap-8'
+          }`}
+        >
           {projects.map((project) => (
             <article key={project.id} className="group flex flex-col">
               <button
@@ -90,8 +96,8 @@ export default function ProjectsSection({
                 </div>
 
                 {/* Card Footer Metadata matching reference: Red Number + Title/Category + Arrow */}
-                <div className="mt-4 flex items-center justify-between gap-4 border-b border-white/[0.06] pb-4 transition-colors duration-200 group-hover:border-[#D91C24]/40">
-                  <div className="flex items-center gap-3.5 min-w-0">
+                <div className="mt-4 flex items-center justify-between gap-3 border-b border-white/[0.06] pb-4 transition-colors duration-200 group-hover:border-[#D91C24]/40">
+                  <div className="flex items-center gap-3 min-w-0">
                     <span className="font-display text-3xl sm:text-[2rem] font-semibold leading-none text-[#D91C24] tabular-nums shrink-0">
                       {project.number}
                     </span>

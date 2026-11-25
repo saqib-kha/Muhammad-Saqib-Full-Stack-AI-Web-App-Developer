@@ -32,23 +32,32 @@ function loadStoredProjects(): ProjectItem[] | null {
   }
 }
 
+function mergeProjects(base: ProjectItem[], overrides: ProjectItem[] | null): ProjectItem[] {
+  if (!overrides || overrides.length === 0) return base;
+  const overrideById = new Map(overrides.map((item) => [item.id, item]));
+  const merged = base.map((item) => overrideById.get(item.id) ?? item);
+  for (const extra of overrides) {
+    if (!base.some((item) => item.id === extra.id)) {
+      merged.push(extra);
+    }
+  }
+  return merged;
+}
+
 export default function App() {
-  const [projects, setProjects] = useState<ProjectItem[]>(
-    () => loadStoredProjects() ?? DEFAULT_PROJECTS
+  const [projects, setProjects] = useState<ProjectItem[]>(() =>
+    mergeProjects(DEFAULT_PROJECTS, loadStoredProjects())
   );
 
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [showAllProjectsModal, setShowAllProjectsModal] = useState(false);
 
   useEffect(() => {
-    // Only pull remote defaults if user has not saved custom local placeholder edits
-    if (loadStoredProjects()) return;
-
     let active = true;
     fetchPortfolioProjects()
       .then((remoteProjects) => {
         if (active && remoteProjects && remoteProjects.length > 0) {
-          setProjects(remoteProjects);
+          setProjects(mergeProjects(remoteProjects, loadStoredProjects()));
         }
       })
       .catch(() => {

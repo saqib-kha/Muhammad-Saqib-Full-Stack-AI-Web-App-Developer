@@ -55,6 +55,27 @@ export function sanitizeExternalUrl(rawUrl: string | null | undefined): string {
 }
 
 export async function fetchPortfolioProjects(): Promise<ProjectItem[] | null> {
+  // Prefer Netlify Functions backend route (/api/projects) when deployed on Netlify
+  try {
+    const apiRes = await fetch('/api/projects', {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    });
+    const contentType = apiRes.headers.get('content-type') || '';
+    if (apiRes.ok && contentType.includes('application/json')) {
+      const payload = (await apiRes.json()) as { projects?: ProjectItem[] | null };
+      if (Array.isArray(payload.projects) && payload.projects.length > 0) {
+        return payload.projects.map((item) => ({
+          ...item,
+          liveUrl: sanitizeExternalUrl(item.liveUrl),
+          repoUrl: sanitizeExternalUrl(item.repoUrl),
+        }));
+      }
+    }
+  } catch {
+    // Fall through to direct InsForge client when running outside Netlify Functions
+  }
+
   if (!insforge) return null;
 
   const { data, error } = await insforge.database
@@ -89,22 +110,65 @@ export interface ContactSubmissionPayload {
   email: string;
   projectType: string;
   message: string;
+  website?: string;
 }
 
 export async function submitContactMessage(
   payload: ContactSubmissionPayload
 ): Promise<{ ok: boolean; error?: string }> {
+  const name = payload.name.trim();
+  const email = payload.email.trim();
+  const projectType = payload.projectType.trim();
+  const message = payload.message.trim();
+  const website = (payload.website || '').trim();
+
+  // Prefer Netlify Functions backend route (/api/contact) when deployed on Netlify
+  try {
+    const apiRes = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        projectType,
+        message,
+        website,
+      }),
+    });
+
+    const contentType = apiRes.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const result = (await apiRes.json()) as { ok?: boolean; error?: string };
+      if (apiRes.ok && result.ok) {
+        return { ok: true };
+      }
+      // Return real server validation/backend errors (400/403/413/502/503) directly
+      if (apiRes.status !== 404) {
+        return {
+          ok: false,
+          error:
+            result.error ||
+            'Unable to deliver your message right now. Please try again in a moment.',
+        };
+      }
+    }
+  } catch {
+    // Fall through to direct InsForge client in local Vite dev preview
+  }
+
+  if (website.length > 0) {
+    return { ok: true };
+  }
+
   if (!insforge) {
     return {
       ok: false,
       error: 'Backend connection is not configured. Please check environment settings.',
     };
   }
-
-  const name = payload.name.trim();
-  const email = payload.email.trim();
-  const projectType = payload.projectType.trim();
-  const message = payload.message.trim();
 
   // Do not chain .select() here because public.contact_messages is write-only for anon/authenticated via RLS
   const { error } = await insforge.database.from('contact_messages').insert([

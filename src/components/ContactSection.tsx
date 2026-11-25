@@ -33,6 +33,7 @@ interface FormValues {
   email: string;
   projectType: string;
   message: string;
+  website: string;
 }
 
 interface FormErrors {
@@ -60,6 +61,7 @@ export default function ContactSection({
     email: '',
     projectType: PROJECT_TYPES[0],
     message: '',
+    website: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -110,6 +112,7 @@ export default function ContactSection({
         email: values.email,
         projectType: values.projectType,
         message: values.message,
+        website: values.website,
       });
 
       if (!result.ok) {
@@ -131,6 +134,7 @@ export default function ContactSection({
       email: '',
       projectType: PROJECT_TYPES[0],
       message: '',
+      website: '',
     });
     setErrors({});
     setSubmitError(null);
@@ -339,6 +343,21 @@ export default function ContactSection({
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                  {/* Anti-spam honeypot field (hidden from human visitors) */}
+                  <div className="sr-only" aria-hidden="true">
+                    <label htmlFor="contact-website">Website</label>
+                    <input
+                      id="contact-website"
+                      name="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={values.website}
+                      onChange={(e) =>
+                        setValues((prev) => ({ ...prev, website: e.target.value }))
+                      }
+                    />
+                  </div>
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <div>
                       <label

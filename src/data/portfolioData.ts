@@ -115,6 +115,19 @@ export const DEFAULT_PROJECTS: ProjectItem[] = [
     repoUrl: '',
     isPlaceholder: true,
   },
+  {
+    id: 'fly-kaaba',
+    number: '04',
+    title: 'FlyKaaba',
+    category: 'TRAVEL & VEHICLE BOOKING',
+    summary:
+      'Vehicle booking and travel agency marketplace across Saudi Arabia for airport transfers, city-to-city travel, and Ziyarat journeys with verified transport companies.',
+    image: '/src/assets/images/project_flykaaba_1795597196104.jpg',
+    stack: ['Full Stack Development', 'Front-End Development', 'JavaScript', 'HTML', 'CSS'],
+    liveUrl: 'https://fly-kaaba.netlify.app',
+    repoUrl: '',
+    isPlaceholder: false,
+  },
 ];
 
 export const EDUCATION: EducationItem[] = [
